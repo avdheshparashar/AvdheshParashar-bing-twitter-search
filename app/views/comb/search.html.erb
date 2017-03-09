@@ -1,0 +1,90 @@
+<h1>Search for person and keyword</h1>
+
+<%= form_tag("/comb/search", method: "get", :id => 'form_id') do %>
+  <%= label_tag(:name, "Enter name:") %>
+  <%= text_field_tag(:name, params[:name]) %>
+  <%= label_tag(:keywords, "Enter Keywords:") %>
+  <%= text_field_tag(:keywords, params[:keywords]) %>
+  <%= submit_tag("Go", :id => 'go_btn')  %>
+  <% if @cache %>
+		<%= "Data is coming from cache"  %>
+  		<%= submit_tag 'Refresh', :name => 'new', :id => 'refresh_btn' %>
+  <% end %>
+<% end %>
+
+
+<table id = "table">
+	<tr>
+		<td valign="top">
+		<% if @result_set != nil %>
+		<% puts  @result_set.count.to_i %>
+				<% @result_set.each do |d, result_list| %>
+					<% i = 0 %>
+					<% result_list.each do |result| %>						
+							<% while (i<50) do %>
+							<p>	
+								<%=  link_to result[1][i]['Title'], result[1][i]['Url'] %> <br />
+								<%=  result[1][i]['Description']%>
+							</p>
+							<% i += 1 %>
+							<% end %>
+							
+					<%  end %>
+				<% end %>
+		<% else %>
+			<%= "Looks like we have got nothing here from Bing" %>
+		<% end %>
+		</td>
+
+		<td valign="top">
+			<% if  @twitter_array != nil %>
+				<%   @twitter_array.each do |twitter_result| %>
+					<%= "Date and Time of tweet:"%>
+					<%= twitter_result[:created_at]  %> <br />
+					<%= "Tweet contents:"%>
+					<%= twitter_result[:text]  %>	<br />					
+					<%= "Tweeted by" %>
+					<%= link_to twitter_result[:user][:name] +'(@'+twitter_result[:user][:screen_name]+')', 'http://twitter.com/'+twitter_result[:user][:screen_name]  %><br/>
+					<%= "About User:"  %>
+					<%= twitter_result[:user][:description]  %>
+					<br /><br />
+				<%  end %>
+			<% else %>
+				<%= "Lets try some new name-keyword combination" %>
+			<% end %>
+		</td>
+	</tr>
+</table>
+
+	
+<script type="text/javascript">
+
+	var search_form = document.getElementById('form_id');
+	var send = true; 
+
+
+	search_form.addEventListener('submit', function(event){
+
+		if(document.getElementById('name').value == "" || document.getElementById('name').value.trim()=="")
+		{
+			document.getElementById('name').value = "";
+			alert("Can't leave person name empty");
+			send = false;
+		}
+		if(document.getElementById('keywords').value == "" || document.getElementById('keywords').value.trim()=="")
+		{
+			document.getElementById('keywords').value = '';
+			alert("Can't leave Keyword empty");
+			send = false;
+		}
+		if(send == false){
+			event.preventDefault();
+		}
+	}, false);
+
+</script>
+
+
+
+	
+
